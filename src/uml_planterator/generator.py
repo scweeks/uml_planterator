@@ -7,9 +7,10 @@ from __future__ import annotations
 
 from collections import defaultdict
 from pathlib import Path
-from typing import Dict, List
+from typing import DefaultDict, Dict, List
 
 from uml_planterator import parsers, renderers, io as io_mod
+from uml_planterator import models
 
 
 class PUMLGenerator:
@@ -31,7 +32,7 @@ class PUMLGenerator:
             m for m in all_modules if m.classes or m.top_level_functions
         ]
 
-        counts = defaultdict(int)
+        counts: DefaultDict[str, int] = defaultdict(int)
         written: List[Path] = []
 
         # Class diagrams
@@ -48,7 +49,7 @@ class PUMLGenerator:
                     io_mod.write_puml(content, p, self.verbose)
 
         # Package diagram per directory
-        pkg_groups: Dict[str, List] = {}
+        pkg_groups: Dict[str, List[models.ModuleInfo]] = {}
         for mod in content_mods:
             key = str(Path(mod.rel_path).parent)
             pkg_groups.setdefault(key, []).append(mod)

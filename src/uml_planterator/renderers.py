@@ -62,7 +62,7 @@ def gen_system_package_diagram(
     title = f"System Package Overview — {src_name}/"
     lines = [f"@startuml {name}", f"title {title}", "", ]
 
-    top_pkgs = {}
+    top_pkgs: dict[str, list[models.ModuleInfo]] = {}
     for m in all_modules:
         top = m.package.split(".")[0]
         top_pkgs.setdefault(top, []).append(m)
