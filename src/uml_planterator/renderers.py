@@ -72,3 +72,71 @@ def gen_system_package_diagram(
 
     lines.append("@enduml")
     return "\n".join(lines)
+
+
+def gen_component_diagram(
+    modules: Iterable[models.ModuleInfo], name: str = "components"
+) -> str:
+    """Generate a minimal component diagram for the provided modules."""
+    lines = [f"@startuml {name}", f"title Component View — {name}", "", ]
+    for m in modules:
+        alias = utils.safe_id(m.name)
+        lines.append(f"component [{m.name}] as {alias}")
+    lines.append("@enduml")
+    return "\n".join(lines)
+
+
+def gen_sequence_diagram(module: models.ModuleInfo) -> str:
+    """Generate a simple sequence diagram using available method calls."""
+    name = f"{module.name}-sequence"
+    lines = [f"@startuml {name}", f"title Sequence — {module.name}", ""]
+    # participants from classes
+    participants = {c.name for c in module.classes}
+    for p in sorted(participants):
+        lines.append(f"participant {p}")
+    # naive interactions: list method calls from first class method
+    if module.classes:
+        first = module.classes[0]
+        if first.methods:
+            for callee, method in first.methods[0].calls:
+                lines.append(f"{first.name} -> {callee}: {method}")
+    lines.append("@enduml")
+    return "\n".join(lines)
+
+
+def gen_activity_diagram(module: models.ModuleInfo) -> str:
+    """Generate a minimal activity diagram from top-level functions."""
+    name = f"{module.name}-activity"
+    lines = [f"@startuml {name}", f"title Activity — {module.name}", "", ]
+    lines.append("start")
+    for fn in module.top_level_functions:
+        lines.append(f":{fn.name}();")
+    lines.append("stop")
+    lines.append("@enduml")
+    return "\n".join(lines)
+
+
+def gen_state_diagram(cls: models.ClassInfo) -> str:
+    """Generate a minimal state diagram using discovered state attributes."""
+    name = f"{cls.name}-state"
+    lines = [f"@startuml {name}", f"title State — {cls.name}", "", "[*]"]
+    for s in cls.state_attributes:
+        lines.append(f"state {s}")
+    lines.append("@enduml")
+    return "\n".join(lines)
+
+
+def gen_usecase_diagram(
+    modules: Iterable[models.ModuleInfo], name: str = "usecases"
+) -> str:
+    lines = [f"@startuml {name}", f"title Usecase — {name}", ""]
+    # actor for each top-level function owner
+    for m in modules:
+        if m.top_level_functions:
+            lines.append(
+                f"actor {m.name}User as {utils.safe_id(m.name + '_user')}"
+            )
+            for fn in m.top_level_functions:
+                lines.append(f"{m.name}User -> ({fn.name})")
+    lines.append("@enduml")
+    return "\n".join(lines)
