@@ -31,6 +31,10 @@ class AdapterRegistry:
             return self._map[key]
         raise KeyError(f"No adapter registered for language: {language}")
 
+    def all_adapters(self):
+        """Return a list of all registered adapter instances."""
+        return list(self._map.values())
+
 
 # Create the global registry and register default adapters
 _INSTANCE = AdapterRegistry()
@@ -45,3 +49,7 @@ def get_adapter(language: str):
 
 def register_adapter(language: str, adapter: object) -> None:
     _INSTANCE.register(language, adapter)
+
+
+def get_all_adapters():
+    return _INSTANCE.all_adapters()

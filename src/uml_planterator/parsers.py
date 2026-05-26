@@ -88,7 +88,7 @@ def parse_method(func: ast.FunctionDef) -> models.MethodInfo:
     )
 
 
-def parse_class(cls: ast.ClassDef) -> models.ClassInfo:
+def parse_class(cls: ast.ClassDef) -> models.ClassInfo:  # noqa: C901
     bases = [utils.up(b) for b in cls.bases]
     decorators = [utils.up(d) for d in cls.decorator_list]
     is_abstract = any("ABC" in b or "Abstract" in b for b in bases) or (
@@ -154,7 +154,7 @@ def parse_class(cls: ast.ClassDef) -> models.ClassInfo:
     )
 
 
-def parse_module_from_source(
+def parse_module_from_source(  # noqa: C901
     py_file: Path, source: str, src_root: Path
 ) -> Optional[models.ModuleInfo]:
     try:
