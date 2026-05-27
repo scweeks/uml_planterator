@@ -64,22 +64,27 @@ class AdapterRegistry:
 
 # Create the global registry and register default adapters
 _INSTANCE = AdapterRegistry()
-_INSTANCE.register("python", PythonAdapter())
-_INSTANCE.register("cpp", CppAdapter())
-_INSTANCE.register("c", CAdapter())
 
-# If the environment points to a JDT LS launcher JAR and the adapter is
-# available, register the JDT-based adapter as the `java` backend. This
-# allows CI/dev to opt-in by setting `UML_PLANETATOR_JDTLS` to the
-# launcher jar path. Otherwise, prefer the javalang adapter or the
-# lightweight regex adapter.
-jdtls_path = os.environ.get("UML_PLANETATOR_JDTLS")
-if jdtls_path and Path(jdtls_path).exists() and JavaJDTAdapter:
-    _INSTANCE.register("java", JavaJDTAdapter())
-elif JavaJavalangAdapter:
-    _INSTANCE.register("java", JavaJavalangAdapter())
-else:
-    _INSTANCE.register("java", JavaAdapter())
+
+def register_default_adapters(env: dict | None = None) -> None:
+    """Register the default adapters into the global registry.
+
+    This function exists so tests can control registration without relying
+    on import-time side effects. By default it uses `os.environ` so calling
+    code does not need to pass anything.
+    """
+    _env = env if env is not None else os.environ
+    _INSTANCE.register("python", PythonAdapter())
+    _INSTANCE.register("cpp", CppAdapter())
+    _INSTANCE.register("c", CAdapter())
+
+    jdtls_path = _env.get("UML_PLANETATOR_JDTLS")
+    if jdtls_path and Path(jdtls_path).exists() and JavaJDTAdapter:
+        _INSTANCE.register("java", JavaJDTAdapter())
+    elif JavaJavalangAdapter:
+        _INSTANCE.register("java", JavaJavalangAdapter())
+    else:
+        _INSTANCE.register("java", JavaAdapter())
 
 
 def get_adapter(language: str):
@@ -113,3 +118,7 @@ def create_adapter(language: str, **kwargs):
         return JavaAdapter()
     # Defer to existing registry for other languages
     return _INSTANCE.get(language)
+
+
+# Register defaults on import to preserve existing behavior for users.
+register_default_adapters()

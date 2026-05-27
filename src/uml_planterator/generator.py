@@ -20,9 +20,15 @@ class PUMLGenerator:
         self.src_root = Path(src_root)
         self.out_root = Path(out_root)
         self.verbose = verbose
+        # `writer` is any object with a `write_puml(content, path, verbose)`
+        # method. It defaults to the module-level `io.write_puml` helper.
+        self.writer = None
 
-    def run(self, dry_run: bool = False) -> Dict:  # noqa: C901
-        # Discover files for all registered adapters and parse them.
+    def _discover_and_parse(self) -> list[tuple[models.ModuleInfo, object]]:
+        """Discover source files and parse them with registered adapters.
+
+        Returns a list of (ModuleInfo, adapter) tuples.
+        """
         all_modules: list[tuple[models.ModuleInfo, object]] = []
         seen = set()
         for adapter in registry.get_all_adapters():
@@ -38,10 +44,25 @@ class PUMLGenerator:
                         mod = None
                     if mod:
                         all_modules.append((mod, adapter))
+        return all_modules
 
-        content_mods = [
-            (m, a) for (m, a) in all_modules if m.classes or m.top_level_functions
-        ]
+    def _filter_content_modules(
+        self, all_modules: list[tuple[models.ModuleInfo, object]]
+    ) -> list[tuple[models.ModuleInfo, object]]:
+        return [(m, a) for (m, a) in all_modules if m.classes or m.top_level_functions]
+
+    def _writer(self):
+        # Return the writer object to use; module `io` has `write_puml`.
+        return self.writer if self.writer is not None else io_mod
+
+    def _maybe_write(self, content: str, path: Path, dry_run: bool) -> None:
+        if dry_run:
+            return
+        self._writer().write_puml(content, path, self.verbose)
+
+    def run(self, dry_run: bool = False) -> Dict:  # noqa: C901
+        all_modules = self._discover_and_parse()
+        content_mods = self._filter_content_modules(all_modules)
 
         counts: DefaultDict[str, int] = defaultdict(int)
         written: List[Path] = []
@@ -57,7 +78,7 @@ class PUMLGenerator:
                 if dry_run:
                     written.append(p)
                 else:
-                    io_mod.write_puml(content, p, self.verbose)
+                    self._maybe_write(content, p, dry_run)
 
                 # If complexity is high, produce a complexity sub-diagram.
                 try:
@@ -78,7 +99,7 @@ class PUMLGenerator:
                     if dry_run:
                         written.append(cp)
                     else:
-                        io_mod.write_puml(c_content, cp, self.verbose)
+                        self._maybe_write(c_content, cp, dry_run)
 
         # Package diagram per directory
         pkg_groups: Dict[str, List[models.ModuleInfo]] = {}
@@ -98,7 +119,7 @@ class PUMLGenerator:
             if dry_run:
                 written.append(p)
             else:
-                io_mod.write_puml(content, p, self.verbose)
+                self._maybe_write(content, p, dry_run)
 
         # System-level package overview
         content = renderers.gen_system_package_diagram(
@@ -109,6 +130,6 @@ class PUMLGenerator:
         if dry_run:
             written.append(p)
         else:
-            io_mod.write_puml(content, p, self.verbose)
+            self._maybe_write(content, p, dry_run)
 
         return {"counts": dict(counts), "paths": [str(p) for p in written]}
