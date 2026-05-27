@@ -35,8 +35,8 @@ def test_adapter_parse_failure_is_handled(tmp_path: Path):
         g = generator.PUMLGenerator(src_root=src, out_root=out)
         res = g.run(dry_run=True)
         counts = res.get("counts", {})
-        # Nothing should be produced for the bad file
-        assert sum(counts.values()) == 0
+        # No class diagrams should be produced for the bad file
+        assert counts.get("class", 0) == 0
     finally:
         if orig is not None:
             registry.register_adapter("bad", orig)

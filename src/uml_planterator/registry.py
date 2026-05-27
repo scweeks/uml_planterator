@@ -10,6 +10,7 @@ from typing import Dict
 from uml_planterator.adapters.python_adapter import PythonAdapter
 from uml_planterator.adapters.cpp_adapter import CppAdapter
 from uml_planterator.adapters.c_adapter import CAdapter
+from uml_planterator.adapters.java_adapter import JavaAdapter
 
 
 class AdapterRegistry:
@@ -41,6 +42,7 @@ _INSTANCE = AdapterRegistry()
 _INSTANCE.register("python", PythonAdapter())
 _INSTANCE.register("cpp", CppAdapter())
 _INSTANCE.register("c", CAdapter())
+_INSTANCE.register("java", JavaAdapter())
 
 
 def get_adapter(language: str):
