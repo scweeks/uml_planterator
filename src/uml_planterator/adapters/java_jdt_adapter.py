@@ -20,6 +20,11 @@ except ImportError:  # pragma: no cover - import-time fallback handling
 
 
 class JavaJDTAdapter(Adapter):
+    def __init__(
+        self, jdtls_client_factory: Optional[callable] = None
+    ) -> None:
+        self._jdtls_client_factory = jdtls_client_factory
+
     @property
     def language(self) -> str:
         return "java-jdtls"
@@ -27,34 +32,37 @@ class JavaJDTAdapter(Adapter):
     def supported_extensions(self) -> list[str]:
         return [".java"]
 
-    def _fallback(
-        self, path: Path, source: str
-    ) -> Optional[models.ModuleInfo]:
-        # Defer to javalang-backed adapter if available
-        try:
-            from uml_planterator.adapters.java_javalang_adapter import (
-                JavaJavalangAdapter,
-            )
+    def _make_client(self, cmd: list[str], workspace: Path):
+        if self._jdtls_client_factory:
+            return self._jdtls_client_factory(cmd, workspace)
+        # Prefer the module-level JDTLSClient if available
+        if JDTLSClient is not None:
+            return JDTLSClient(cmd, workspace)
+        raise AdapterError("JDTLSClient not available")
 
-            return JavaJavalangAdapter().parse_source(path, source)
-        except Exception:
-            return None
-
-    def parse_source(
-        self, path: Path, source: str
-    ) -> Optional[models.ModuleInfo]:
+    def parse_source(self, path: Path, source: str) -> models.ModuleInfo:
         jdtls_jar = os.environ.get("UML_PLANETATOR_JDTLS")
         if (
             not jdtls_jar
             or not Path(jdtls_jar).exists()
             or JDTLSClient is None
         ):
-            return self._fallback(path, source)
+            # Fallback path should either return a ModuleInfo or raise
+            try:
+                from uml_planterator.adapters.java_javalang_adapter import (
+                    JavaJavalangAdapter,
+                )
+
+                return JavaJavalangAdapter().parse_source(path, source)
+            except Exception as exc:
+                raise AdapterError(
+                    "No suitable Java adapter available"
+                ) from exc
 
         # Start a temporary workspace rooted at the file's parent
         workspace = path.parent
         cmd = ["java", "-jar", str(jdtls_jar), "-data", str(workspace)]
-        client = JDTLSClient(cmd, workspace)
+        client = self._make_client(cmd, workspace)
         try:
             client.start()
             client.initialize(f"file://{workspace}")
@@ -105,7 +113,7 @@ class JavaJDTAdapter(Adapter):
                 cc=sum((cls.cc for cls in classes), 0) or 1,
             )
             return module
-        except Exception as exc:  # pragma: no cover - runtime errors should surface
+        except Exception as exc:  # pragma: no cover - runtime errors
             raise AdapterError("JDT LS adapter failed") from exc
         finally:
             try:

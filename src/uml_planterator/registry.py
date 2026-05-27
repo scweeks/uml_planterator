@@ -94,3 +94,24 @@ def register_adapter(language: str, adapter: object) -> None:
 
 def get_all_adapters():
     return _INSTANCE.all_adapters()
+
+
+def create_adapter(language: str, **kwargs):
+    """Factory: create an adapter instance for `language`.
+
+    Optional kwargs may include `jdtls_client_factory` used to inject a
+    testable `JDTLSClient` into the `JavaJDTAdapter`.
+    """
+    if not isinstance(language, str) or not language:
+        raise ValueError("language must be a non-empty string")
+    key = language.lower()
+    if key == "java":
+        jdtls_factory = kwargs.get("jdtls_client_factory")
+        env_jdtls = os.environ.get("UML_PLANETATOR_JDTLS")
+        if env_jdtls and Path(env_jdtls).exists() and JavaJDTAdapter:
+            return JavaJDTAdapter(jdtls_client_factory=jdtls_factory)
+        if JavaJavalangAdapter:
+            return JavaJavalangAdapter()
+        return JavaAdapter()
+    # Defer to existing registry for other languages
+    return _INSTANCE.get(language)

@@ -1,5 +1,5 @@
 """Java adapter using `javalang` when available, with a regex fallback.
-
+ 
 This adapter attempts to use the `javalang` parser for accurate AST
 information. If `javalang` is not installed, it falls back to the
 lightweight regex-based `JavaAdapter` to preserve testability and
@@ -8,7 +8,6 @@ developer experience in minimal environments.
 from __future__ import annotations
 
 from pathlib import Path
-from typing import Optional
 
 from uml_planterator.adapters.base import Adapter
 from uml_planterator import models
@@ -22,9 +21,7 @@ class JavaJavalangAdapter(Adapter):
     def supported_extensions(self) -> list[str]:
         return [".java"]
 
-    def parse_source(
-        self, path: Path, source: str
-    ) -> Optional[models.ModuleInfo]:
+    def parse_source(self, path: Path, source: str) -> models.ModuleInfo:
         try:
             import javalang  # type: ignore
         except ImportError:

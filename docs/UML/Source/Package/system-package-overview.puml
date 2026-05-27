@@ -1,0 +1,5 @@
+@startuml system-package-overview
+title System Package Overview — test_generate_puml_main_defaul0/
+
+component [a] as a
+@enduml

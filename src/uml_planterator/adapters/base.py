@@ -39,12 +39,12 @@ class Adapter(ABC):
         """
 
     @abstractmethod
-    def parse_source(
-        self, path: Path, source: str
-    ) -> models.ModuleInfo | None:
-        """Parse `source` and return a `ModuleInfo` or None.
+    def parse_source(self, path: Path, source: str) -> models.ModuleInfo:
+        """Parse `source` and return a `ModuleInfo`.
 
-        Implementations must be pure and side-effect free.
+        Implementations must be pure and side-effect free. On failure
+        implementations should raise `AdapterError` rather than return
+        None to make error handling explicit and easier to test.
         """
 
     def parse_ast(self, path: Path, node) -> models.ModuleInfo | None:
