@@ -2,8 +2,7 @@ from pathlib import Path
 
 import pytest
 
-from uml_planterator import registry, generator
-
+from uml_planterator import generator, registry
 
 testcases = [
     (
@@ -17,7 +16,9 @@ testcases = [
 
 
 @pytest.mark.parametrize("lang,filename,content", testcases)
-def test_multi_language_generation_creates_expected_diagrams(tmp_path: Path, lang, filename, content):
+def test_multi_language_generation_creates_expected_diagrams(
+    tmp_path: Path, lang, filename, content
+):
     src = tmp_path / "srcpkg"
     src.mkdir()
     f = src / filename

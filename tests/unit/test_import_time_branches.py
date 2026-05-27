@@ -1,8 +1,7 @@
 import builtins
 import importlib
- 
-from types import ModuleType
 from pathlib import Path
+from types import ModuleType
 
 
 def test_java_jdt_adapter_import_fallback(monkeypatch, tmp_path: Path):

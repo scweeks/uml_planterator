@@ -1,7 +1,7 @@
 import importlib
 import sys
-from types import ModuleType
 from pathlib import Path
+from types import ModuleType
 
 
 def test_registry_registers_jdt_when_env_and_adapter_present(

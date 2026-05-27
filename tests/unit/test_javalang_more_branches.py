@@ -49,9 +49,7 @@ def test_javalang_adapter_modifiers_and_package(monkeypatch, tmp_path: Path):
             self.package = type("P", (), {"name": "org.example.sub"})()
             self.types = [TypeDecl()]
 
-    monkeypatch.setattr(
-        "javalang.parse.parse", lambda src: Tree(), raising=False
-    )
+    monkeypatch.setattr("javalang.parse.parse", lambda src: Tree(), raising=False)
 
     adapter = JavaJavalangAdapter()
     src = tmp_path / "M.java"

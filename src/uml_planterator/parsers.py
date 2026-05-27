@@ -2,6 +2,7 @@
 
 These functions avoid file I/O: callers provide source text or AST nodes.
 """
+
 from __future__ import annotations
 
 import ast
@@ -43,7 +44,7 @@ def extract_state_transitions(func: ast.FunctionDef) -> list[tuple]:
                     and target.value.id == "self"
                     and any(kw in target.attr.lower() for kw in state_kws)
                 ):
-                    val = utils.up(node.value).strip('"\'')
+                    val = utils.up(node.value).strip("\"'")
                     transitions.append((target.attr, val, func.name))
     return transitions
 
@@ -66,9 +67,7 @@ def parse_method(func: ast.FunctionDef) -> models.MethodInfo:
     decorators = [utils.up(d) for d in func.decorator_list]
     args = func.args.args
     start = 1 if args and args[0].arg in ("self", "cls") else 0
-    params = [
-        models.Param(a.arg, utils.up(a.annotation)) for a in args[start:]
-    ]
+    params = [models.Param(a.arg, utils.up(a.annotation)) for a in args[start:]]
     return models.MethodInfo(
         name=func.name,
         params=params,
@@ -102,9 +101,7 @@ def parse_class(cls: ast.ClassDef) -> models.ClassInfo:  # noqa: C901
     state_kws = ("state", "status", "phase", "mode", "stage")
 
     for item in cls.body:
-        if isinstance(item, ast.AnnAssign) and isinstance(
-            item.target, ast.Name
-        ):
+        if isinstance(item, ast.AnnAssign) and isinstance(item.target, ast.Name):
             n = item.target.id
             attributes.append(
                 models.AttributeInfo(

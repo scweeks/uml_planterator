@@ -1,6 +1,6 @@
 import builtins
-from types import SimpleNamespace
 from pathlib import Path
+from types import SimpleNamespace
 
 from uml_planterator.adapters.java_javalang_adapter import JavaJavalangAdapter
 

@@ -1,8 +1,7 @@
 from pathlib import Path
 
-
-from uml_planterator.parsers import parse_module_from_source
 from uml_planterator import io
+from uml_planterator.parsers import parse_module_from_source
 
 
 def test_parse_module_from_source_imports_and_main(tmp_path: Path):
@@ -11,8 +10,7 @@ def test_parse_module_from_source_imports_and_main(tmp_path: Path):
     pkg_dir = src_root / "pkg"
     pkg_dir.mkdir()
     f = pkg_dir / "mod.py"
-    f.write_text(
-        """
+    f.write_text("""
 import os
 from .sub import helper
 __all__ = ["X", "Y"]
@@ -20,8 +18,7 @@ def main():
     pass
 if __name__ == '__main__':
     main()
-"""
-    )
+""")
 
     mod = parse_module_from_source(f, f.read_text(), src_root)
     assert mod is not None

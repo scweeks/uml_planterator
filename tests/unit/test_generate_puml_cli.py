@@ -1,6 +1,5 @@
-import sys
-from pathlib import Path
 import importlib.util
+import sys
 from pathlib import Path
 
 
@@ -17,7 +16,7 @@ def _load_generate_puml_module():
             return mod
     raise RuntimeError("couldn't find src/generate_puml.py")
 
- 
+
 generate_puml = _load_generate_puml_module()
 
 
@@ -29,9 +28,7 @@ def test_generate_puml_main_default(monkeypatch, tmp_path: Path):
     assert res == 0
 
 
-def test_generate_puml_dry_run_and_verbose(
-    monkeypatch, tmp_path: Path
-):
+def test_generate_puml_dry_run_and_verbose(monkeypatch, tmp_path: Path):
     monkeypatch.setattr(
         sys,
         "argv",

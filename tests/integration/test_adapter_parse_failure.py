@@ -1,8 +1,7 @@
 from pathlib import Path
 
-from uml_planterator import registry
+from uml_planterator import generator, registry
 from uml_planterator.adapters.base import AdapterError
-from uml_planterator import generator
 
 
 class BadAdapter:

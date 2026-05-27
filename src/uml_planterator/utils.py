@@ -1,5 +1,5 @@
-"""Utility helpers used across the package.
-"""
+"""Utility helpers used across the package."""
+
 from __future__ import annotations
 
 import ast

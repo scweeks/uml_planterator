@@ -3,9 +3,7 @@ from pathlib import Path
 from uml_planterator.adapters.java_javalang_adapter import JavaJavalangAdapter
 
 
-def test_multi_declarator_and_param_type_attrerror(
-    monkeypatch, tmp_path: Path
-):
+def test_multi_declarator_and_param_type_attrerror(monkeypatch, tmp_path: Path):
     class BadType:
         def __getattr__(self, _):
             raise AttributeError()
@@ -44,9 +42,7 @@ def test_multi_declarator_and_param_type_attrerror(
             self.package = None
             self.types = [TypeDecl()]
 
-    monkeypatch.setattr(
-        "javalang.parse.parse", lambda src: Tree(), raising=False
-    )
+    monkeypatch.setattr("javalang.parse.parse", lambda src: Tree(), raising=False)
 
     adapter = JavaJavalangAdapter()
     src = tmp_path / "X.java"

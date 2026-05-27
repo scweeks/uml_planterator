@@ -6,6 +6,7 @@ stage; functions are split across submodules for testability.
 
 Public API is provided by `generator.PUMLGenerator` in later iterations.
 """
+
 __all__ = ["models", "parsers", "renderers", "utils", "complexity", "generator"]
 
 __version__ = "0.0.0"

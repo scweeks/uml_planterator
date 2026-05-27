@@ -1,7 +1,6 @@
 import ast
 
-
-from uml_planterator import utils, complexity
+from uml_planterator import complexity, utils
 
 
 def test_safe_id_edgecases():

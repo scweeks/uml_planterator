@@ -1,4 +1,5 @@
 """Render PlantUML diagrams from models."""
+
 from __future__ import annotations
 
 from typing import Iterable
@@ -9,7 +10,11 @@ from uml_planterator import models, utils
 def gen_class_diagram(cls: models.ClassInfo, module: models.ModuleInfo) -> str:
     name = f"{module.name}-{cls.name}"
     title = f"{cls.name} — src/{module.rel_path}"
-    lines = [f"@startuml {name}", f"title {title}", "", ]
+    lines = [
+        f"@startuml {name}",
+        f"title {title}",
+        "",
+    ]
 
     alias = utils.safe_id(f"{module.name}_{cls.name}")
     lines.append(f'class "{cls.name}" as {alias} {{')
@@ -34,11 +39,16 @@ def gen_class_diagram(cls: models.ClassInfo, module: models.ModuleInfo) -> str:
     return "\n".join(lines)
 
 
-def gen_package_diagram(modules: Iterable[models.ModuleInfo], pkg_name: str,
-                        src_name: str = "src") -> str:
+def gen_package_diagram(
+    modules: Iterable[models.ModuleInfo], pkg_name: str, src_name: str = "src"
+) -> str:
     name = f"{pkg_name}-package"
     title = f"{pkg_name} — {src_name}/{pkg_name}/"
-    lines = [f"@startuml {name}", f"title {title}", "", ]
+    lines = [
+        f"@startuml {name}",
+        f"title {title}",
+        "",
+    ]
 
     lines.append(f"package {pkg_name} {{")
     for mod in modules:
@@ -60,7 +70,11 @@ def gen_system_package_diagram(
 ) -> str:
     name = "system-package-overview"
     title = f"System Package Overview — {src_name}/"
-    lines = [f"@startuml {name}", f"title {title}", "", ]
+    lines = [
+        f"@startuml {name}",
+        f"title {title}",
+        "",
+    ]
 
     top_pkgs: dict[str, list[models.ModuleInfo]] = {}
     for m in all_modules:
@@ -78,7 +92,11 @@ def gen_component_diagram(
     modules: Iterable[models.ModuleInfo], name: str = "components"
 ) -> str:
     """Generate a minimal component diagram for the provided modules."""
-    lines = [f"@startuml {name}", f"title Component View — {name}", "", ]
+    lines = [
+        f"@startuml {name}",
+        f"title Component View — {name}",
+        "",
+    ]
     for m in modules:
         alias = utils.safe_id(m.name)
         lines.append(f"component [{m.name}] as {alias}")
@@ -107,7 +125,11 @@ def gen_sequence_diagram(module: models.ModuleInfo) -> str:
 def gen_activity_diagram(module: models.ModuleInfo) -> str:
     """Generate a minimal activity diagram from top-level functions."""
     name = f"{module.name}-activity"
-    lines = [f"@startuml {name}", f"title Activity — {module.name}", "", ]
+    lines = [
+        f"@startuml {name}",
+        f"title Activity — {module.name}",
+        "",
+    ]
     lines.append("start")
     for fn in module.top_level_functions:
         lines.append(f":{fn.name}();")
@@ -133,9 +155,7 @@ def gen_usecase_diagram(
     # actor for each top-level function owner
     for m in modules:
         if m.top_level_functions:
-            lines.append(
-                f"actor {m.name}User as {utils.safe_id(m.name + '_user')}"
-            )
+            lines.append(f"actor {m.name}User as {utils.safe_id(m.name + '_user')}")
             for fn in m.top_level_functions:
                 lines.append(f"{m.name}User -> ({fn.name})")
     lines.append("@enduml")

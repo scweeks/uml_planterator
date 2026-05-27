@@ -1,7 +1,6 @@
 from pathlib import Path
 
-from uml_planterator import registry
-from uml_planterator import renderers
+from uml_planterator import registry, renderers
 
 
 def create_python_source_with_features(path: Path):

@@ -15,8 +15,7 @@ def test_jdtls_adapter_parse_simple(tmp_path: Path):
     src_dir = tmp_path / "src" / "com" / "example"
     src_dir.mkdir(parents=True)
     main = src_dir / "Main.java"
-    main.write_text(
-        """
+    main.write_text("""
         package com.example;
 
         public class Main {
@@ -25,12 +24,10 @@ def test_jdtls_adapter_parse_simple(tmp_path: Path):
                 s.doWork();
             }
         }
-        """
-    )
+        """)
 
     service = src_dir / "Service.java"
-    service.write_text(
-        """
+    service.write_text("""
         package com.example;
 
         public class Service {
@@ -42,8 +39,7 @@ def test_jdtls_adapter_parse_simple(tmp_path: Path):
                 }
             }
         }
-        """
-    )
+        """)
 
     adapter = JavaJDTAdapter()
     mod = adapter.parse_source(main, main.read_text())

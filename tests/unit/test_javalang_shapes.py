@@ -25,9 +25,7 @@ def test_javalang_adapter_various_shapes(monkeypatch, tmp_path: Path):
             self.declarators = [Declarator(name)]
 
     class Method:
-        def __init__(
-            self, name, modifiers=None, params=None, return_type=None
-        ):
+        def __init__(self, name, modifiers=None, params=None, return_type=None):
             self.modifiers = modifiers or ["public"]
             self.parameters = params or []
             self.return_type = TypeName(return_type) if return_type else None
@@ -60,9 +58,7 @@ def test_javalang_adapter_various_shapes(monkeypatch, tmp_path: Path):
             self.package = type("P", (), {"name": "com.example"})()
             self.types = [TypeDecl("C")]
 
-    monkeypatch.setattr(
-        "javalang.parse.parse", lambda src: Tree(), raising=False
-    )
+    monkeypatch.setattr("javalang.parse.parse", lambda src: Tree(), raising=False)
 
     adapter = JavaJavalangAdapter()
     src = tmp_path / "C.java"

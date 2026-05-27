@@ -2,8 +2,8 @@ from pathlib import Path
 
 import pytest
 
-from uml_planterator.adapters.base import Adapter, AdapterError
 from uml_planterator import models
+from uml_planterator.adapters.base import Adapter, AdapterError
 
 
 class DummyAdapter(Adapter):
@@ -14,9 +14,7 @@ class DummyAdapter(Adapter):
     def supported_extensions(self) -> list[str]:
         return [".dummy"]
 
-    def parse_source(
-        self, path: Path, source: str
-    ) -> models.ModuleInfo | None:
+    def parse_source(self, path: Path, source: str) -> models.ModuleInfo | None:
         _ = source
         return models.ModuleInfo(
             name=path.stem,
@@ -27,9 +25,7 @@ class DummyAdapter(Adapter):
 
 
 def test_compute_complexity_fallback():
-    m = models.ModuleInfo(
-        name="m", package="p", rel_path="m.py", classes=[], cc=5
-    )
+    m = models.ModuleInfo(name="m", package="p", rel_path="m.py", classes=[], cc=5)
     a = DummyAdapter()
     assert a.compute_complexity(m) == 5
 

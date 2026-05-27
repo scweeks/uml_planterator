@@ -1,8 +1,6 @@
 from pathlib import Path
 
-from uml_planterator import registry
-from uml_planterator import generator
-from uml_planterator import models
+from uml_planterator import generator, models, registry
 
 
 class FooAdapter:

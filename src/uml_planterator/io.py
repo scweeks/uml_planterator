@@ -1,4 +1,5 @@
 """File I/O helpers for writing .puml files."""
+
 from __future__ import annotations
 
 from pathlib import Path

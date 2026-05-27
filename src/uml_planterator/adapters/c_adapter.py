@@ -1,11 +1,12 @@
 """Minimal C adapter using regex to extract typedef'd structs as classes."""
+
 from __future__ import annotations
 
 import re
 from pathlib import Path
 
-from uml_planterator.adapters.base import Adapter
 from uml_planterator import models
+from uml_planterator.adapters.base import Adapter
 
 
 class CAdapter(Adapter):
@@ -18,9 +19,7 @@ class CAdapter(Adapter):
     def supported_extensions(self) -> list[str]:
         return [".c", ".h"]
 
-    def parse_source(
-        self, path: Path, source: str
-    ) -> models.ModuleInfo | None:
+    def parse_source(self, path: Path, source: str) -> models.ModuleInfo | None:
         module_name = path.stem
         rel = str(path.relative_to(path.parent))
         classes = []

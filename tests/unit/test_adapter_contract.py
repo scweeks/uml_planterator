@@ -16,6 +16,7 @@ def test_adapters_expose_language_and_extensions():
 
 def test_compute_complexity_available():
     adapter = registry.get_adapter("python")
+
     # compute_complexity should return an int (fallback to module.cc)
     # Create a minimal fake ModuleInfo-like object
     class M:

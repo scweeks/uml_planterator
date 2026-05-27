@@ -4,13 +4,14 @@ This is intentionally a lightweight implementation to provide basic
 class/function discovery for C++ files. For full language support we
 recommend a Tree-sitter or LSP-based adapter later.
 """
+
 from __future__ import annotations
 
 import re
 from pathlib import Path
 
-from uml_planterator.adapters.base import Adapter
 from uml_planterator import models
+from uml_planterator.adapters.base import Adapter
 
 
 class CppAdapter(Adapter):
@@ -25,9 +26,7 @@ class CppAdapter(Adapter):
     def supported_extensions(self) -> list[str]:
         return [".cpp", ".hpp", ".cc", ".h"]
 
-    def parse_source(
-        self, path: Path, source: str
-    ) -> models.ModuleInfo | None:
+    def parse_source(self, path: Path, source: str) -> models.ModuleInfo | None:
         module_name = path.stem
         rel = str(path.relative_to(path.parent))
         classes = []

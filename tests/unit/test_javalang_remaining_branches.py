@@ -30,9 +30,7 @@ def test_private_visibility_and_empty_declarators(monkeypatch, tmp_path: Path):
             self.package = None
             self.types = [TypeDecl()]
 
-    monkeypatch.setattr(
-        "javalang.parse.parse", lambda src: Tree(), raising=False
-    )
+    monkeypatch.setattr("javalang.parse.parse", lambda src: Tree(), raising=False)
 
     adapter = JavaJavalangAdapter()
     src = tmp_path / "P.java"
@@ -65,9 +63,7 @@ def test_static_and_abstract_flags(monkeypatch, tmp_path: Path):
             self.package = None
             self.types = [TypeDecl()]
 
-    monkeypatch.setattr(
-        "javalang.parse.parse", lambda src: Tree(), raising=False
-    )
+    monkeypatch.setattr("javalang.parse.parse", lambda src: Tree(), raising=False)
 
     adapter = JavaJavalangAdapter()
     src = tmp_path / "S.java"
@@ -105,9 +101,7 @@ def test_children_list_and_tuple_recursion(monkeypatch, tmp_path: Path):
             self.package = None
             self.types = [TypeDecl()]
 
-    monkeypatch.setattr(
-        "javalang.parse.parse", lambda src: Tree(), raising=False
-    )
+    monkeypatch.setattr("javalang.parse.parse", lambda src: Tree(), raising=False)
 
     adapter = JavaJavalangAdapter()
     src = tmp_path / "C1.java"
@@ -135,9 +129,7 @@ def test_field_type_none(monkeypatch, tmp_path: Path):
             self.package = None
             self.types = [TypeDecl()]
 
-    monkeypatch.setattr(
-        "javalang.parse.parse", lambda src: Tree(), raising=False
-    )
+    monkeypatch.setattr("javalang.parse.parse", lambda src: Tree(), raising=False)
 
     adapter = JavaJavalangAdapter()
     src = tmp_path / "FN.java"

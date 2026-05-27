@@ -1,10 +1,9 @@
 from pathlib import Path
- 
 
 import pytest
 
-from uml_planterator.adapters.java_jdt_adapter import JavaJDTAdapter
 from uml_planterator.adapters.base import AdapterError
+from uml_planterator.adapters.java_jdt_adapter import JavaJDTAdapter
 
 
 def test_jdt_adapter_fallback_when_no_jar(monkeypatch, tmp_path: Path):
@@ -19,9 +18,7 @@ def test_jdt_adapter_fallback_when_no_jar(monkeypatch, tmp_path: Path):
     assert res is None or hasattr(res, "classes")
 
 
-def test_jdt_adapter_raises_adapter_error_and_shuts_down(
-    monkeypatch, tmp_path: Path
-):
+def test_jdt_adapter_raises_adapter_error_and_shuts_down(monkeypatch, tmp_path: Path):
     # Create a fake JDTLSClient that raises during request and record shutdown
     class FakeClient:
         def __init__(self, cmd, workspace):

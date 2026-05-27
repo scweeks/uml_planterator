@@ -1,7 +1,6 @@
 import ast
-from pathlib import Path
 
-from uml_planterator import complexity, utils, parsers
+from uml_planterator import complexity, parsers, utils
 
 
 def test_cyclomatic_complexity_counts_if_and_for():

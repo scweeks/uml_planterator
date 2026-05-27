@@ -20,4 +20,4 @@ class A:
     # Ensure files were written
     assert counts.get("class", 0) >= 1
     # Check directory exists
-    assert (out.exists())
+    assert out.exists()

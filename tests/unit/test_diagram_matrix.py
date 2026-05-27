@@ -4,7 +4,6 @@ import pytest
 
 from uml_planterator import registry, renderers
 
-
 PY_SRC = """
 class A:
     def __init__(self):
@@ -53,12 +52,15 @@ DIAGRAMS = [
 ]
 
 
-@pytest.mark.parametrize("lang,filename,src", [
-    ("python", "m.py", PY_SRC),
-    ("c", "m.c", C_SRC),
-    ("cpp", "m.cpp", CPP_SRC),
-    ("java", "A.java", JAVA_SRC),
-])
+@pytest.mark.parametrize(
+    "lang,filename,src",
+    [
+        ("python", "m.py", PY_SRC),
+        ("c", "m.c", C_SRC),
+        ("cpp", "m.cpp", CPP_SRC),
+        ("java", "A.java", JAVA_SRC),
+    ],
+)
 @pytest.mark.parametrize("diagram", DIAGRAMS)
 def test_diagram_matrix(
     tmp_path: Path, lang: str, filename: str, src: str, diagram: str

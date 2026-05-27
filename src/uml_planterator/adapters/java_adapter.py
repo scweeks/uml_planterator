@@ -3,13 +3,14 @@
 Lightweight starter adapter to enable Java support for tests. Replace with
 Tree-sitter or LSP-based adapter for production-grade parsing.
 """
+
 from __future__ import annotations
 
 import re
 from pathlib import Path
 
-from uml_planterator.adapters.base import Adapter
 from uml_planterator import models
+from uml_planterator.adapters.base import Adapter
 
 
 class JavaAdapter(Adapter):

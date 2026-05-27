@@ -1,7 +1,7 @@
-from uml_planterator import registry
-from uml_planterator.adapters import base
-from uml_planterator import generator
 from pathlib import Path
+
+from uml_planterator import generator, registry
+from uml_planterator.adapters import base
 
 
 def test_registry_singleton_and_get_all():

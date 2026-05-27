@@ -4,15 +4,17 @@ Provides `get_adapter` and `register_adapter` convenience functions that
 delegate to the singleton `AdapterRegistry` instance. This follows the
 Factory and Singleton patterns to manage adapters.
 """
+
 from __future__ import annotations
 
-from typing import Dict
+import importlib
 import os
 from pathlib import Path
-from uml_planterator.adapters.python_adapter import PythonAdapter
-from uml_planterator.adapters.cpp_adapter import CppAdapter
+from typing import Dict
+
 from uml_planterator.adapters.c_adapter import CAdapter
-import importlib
+from uml_planterator.adapters.cpp_adapter import CppAdapter
+from uml_planterator.adapters.python_adapter import PythonAdapter
 
 # Import the richer Java adapter if available; otherwise fall back to the
 # lightweight regex-based adapter. Use importlib to keep line lengths short
@@ -21,9 +23,7 @@ JavaJavalangAdapter = None
 JavaAdapter = None
 JavaJDTAdapter = None
 try:
-    _mod = importlib.import_module(
-        "uml_planterator.adapters.java_javalang_adapter"
-    )
+    _mod = importlib.import_module("uml_planterator.adapters.java_javalang_adapter")
     JavaJavalangAdapter = getattr(_mod, "JavaJavalangAdapter")
 except ImportError:
     _mod = importlib.import_module("uml_planterator.adapters.java_adapter")
@@ -32,9 +32,7 @@ except ImportError:
 # Try to import the JDT LS backed adapter; registration depends on
 # the presence of a configured JDT LS (UML_PLANETATOR_JDTLS env var).
 try:
-    _mod2 = importlib.import_module(
-        "uml_planterator.adapters.java_jdt_adapter"
-    )
+    _mod2 = importlib.import_module("uml_planterator.adapters.java_jdt_adapter")
     JavaJDTAdapter = getattr(_mod2, "JavaJDTAdapter")
 except ImportError:
     JavaJDTAdapter = None

@@ -1,13 +1,9 @@
 import io
 import json
-import threading
-import time
-from queue import Queue
-from pathlib import Path
 import subprocess
-import importlib
-
-import pytest
+import time
+from pathlib import Path
+from queue import Queue
 
 from uml_planterator.lsp.jdtls_client import JDTLSClient
 
@@ -27,7 +23,7 @@ class FakePopen:
 
 
 def test_request_with_fake_send(monkeypatch):
-    client = JDTLSClient(cmd=["/bin/true"], workspace=Path('.'))
+    client = JDTLSClient(cmd=["/bin/true"], workspace=Path("."))
 
     def fake_send(payload):
         # simulate server reply into pending queue
@@ -44,7 +40,9 @@ def test_request_with_fake_send(monkeypatch):
 
 def test_start_and_reader_dispatch(monkeypatch):
     # prepare a message with id=1 framed
-    msg = json.dumps({"jsonrpc": "2.0", "id": 1, "result": {"pong": True}}).encode("utf-8")
+    msg = json.dumps({"jsonrpc": "2.0", "id": 1, "result": {"pong": True}}).encode(
+        "utf-8"
+    )
     framed = f"Content-Length: {len(msg)}\r\n\r\n".encode("ascii") + msg
     fake = FakePopen(stdout_bytes=framed)
 
@@ -53,7 +51,7 @@ def test_start_and_reader_dispatch(monkeypatch):
 
     monkeypatch.setattr(subprocess, "Popen", fake_popen)
 
-    client = JDTLSClient(cmd=["java"], workspace=Path('.'))
+    client = JDTLSClient(cmd=["java"], workspace=Path("."))
     # prepare a pending queue for id=1
     q = Queue(maxsize=1)
     client._pending[1] = q

@@ -1,4 +1,5 @@
 """Cyclomatic complexity utilities."""
+
 from __future__ import annotations
 
 import ast
@@ -17,8 +18,9 @@ def cyclomatic_complexity(node: ast.AST) -> int:
     """
     cc = 1
     for n in ast.walk(node):
-        if isinstance(n, (ast.If, ast.For, ast.While, ast.With,
-                          ast.Assert, ast.comprehension)):
+        if isinstance(
+            n, (ast.If, ast.For, ast.While, ast.With, ast.Assert, ast.comprehension)
+        ):
             cc += 1
         elif isinstance(n, ast.ExceptHandler):
             cc += 1

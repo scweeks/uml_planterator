@@ -1,11 +1,8 @@
-from uml_planterator import models
-from uml_planterator import renderers
+from uml_planterator import models, renderers
 
 
 def make_simple_class():
-    m = models.MethodInfo(
-        name="do", params=[models.Param("x")], return_type="int"
-    )
+    m = models.MethodInfo(name="do", params=[models.Param("x")], return_type="int")
     a = models.AttributeInfo(name="value", type_hint="int")
     cls = models.ClassInfo(
         name="MyClass", attributes=[a], methods=[m], docstring="Example class"

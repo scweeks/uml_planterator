@@ -3,6 +3,7 @@
 These mirror the original structures but are kept in a dedicated module
 to improve testability and separation of concerns.
 """
+
 from dataclasses import dataclass, field
 from typing import List, Tuple
 

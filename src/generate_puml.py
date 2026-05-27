@@ -26,9 +26,7 @@ def main() -> int:
 
     src_root = Path(args.src)
     out_root = Path(args.out)
-    gen = PUMLGenerator(
-        src_root=src_root, out_root=out_root, verbose=args.verbose
-    )
+    gen = PUMLGenerator(src_root=src_root, out_root=out_root, verbose=args.verbose)
     res = gen.run(dry_run=args.dry_run)
     counts = res.get("counts", {})
     total = sum(counts.values())

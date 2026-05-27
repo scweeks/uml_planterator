@@ -3,9 +3,7 @@ from pathlib import Path
 from uml_planterator.adapters.java_javalang_adapter import JavaJavalangAdapter
 
 
-def test_javalang_adapter_handles_attribute_errors(
-    monkeypatch, tmp_path: Path
-):
+def test_javalang_adapter_handles_attribute_errors(monkeypatch, tmp_path: Path):
     # Build fake AST-like objects that exercise AttributeError branches
     class BadType:
         def __getattr__(self, item):

@@ -2,7 +2,8 @@ from pathlib import Path
 
 import pytest
 
-from uml_planterator import generator, io as io_mod
+from uml_planterator import generator
+from uml_planterator import io as io_mod
 
 
 def test_io_write_error_bubbles(tmp_path: Path, monkeypatch):

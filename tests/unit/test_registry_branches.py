@@ -1,7 +1,7 @@
 import importlib
 import importlib.util
-from types import ModuleType
 from pathlib import Path
+from types import ModuleType
 
 
 def _load_registry_with_import_hook(hook):
@@ -17,9 +17,7 @@ def _load_registry_with_import_hook(hook):
             candidate = anc / "src" / "uml_planterator" / "registry.py"
             if candidate.exists():
                 break
-        spec = importlib.util.spec_from_file_location(
-            "temp_registry", str(candidate)
-        )
+        spec = importlib.util.spec_from_file_location("temp_registry", str(candidate))
         mod = importlib.util.module_from_spec(spec)
         spec.loader.exec_module(mod)
         return mod
@@ -33,6 +31,7 @@ def test_registry_fallback_to_regex_adapter():
             raise ImportError()
         if name == "uml_planterator.adapters.java_adapter":
             m = ModuleType(name)
+
             class JavaAdapter:
                 pass
 
@@ -51,6 +50,7 @@ def test_registry_uses_javalang_when_present():
     def hook(name, package=None):
         if name == "uml_planterator.adapters.java_javalang_adapter":
             m = ModuleType(name)
+
             class JavaJavalangAdapter:
                 def __init__(self):
                     pass

@@ -4,6 +4,7 @@ Adapters translate (path, source) -> models.ModuleInfo and must be pure
 and testable. Implementations should not perform I/O beyond using the
 provided `source` string.
 """
+
 from __future__ import annotations
 
 from abc import ABC, abstractmethod

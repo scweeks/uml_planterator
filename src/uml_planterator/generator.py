@@ -3,15 +3,16 @@
 This class is intentionally small and testable. It delegates parsing to
 `parsers`, rendering to `renderers`, and file I/O to `io`.
 """
+
 from __future__ import annotations
 
 from collections import defaultdict
 from pathlib import Path
 from typing import DefaultDict, Dict, List
 
-from uml_planterator import renderers, io as io_mod, registry
+from uml_planterator import io as io_mod
+from uml_planterator import models, registry, renderers
 from uml_planterator.adapters.base import AdapterError
-from uml_planterator import models
 
 
 class PUMLGenerator:
@@ -39,9 +40,7 @@ class PUMLGenerator:
                         all_modules.append((mod, adapter))
 
         content_mods = [
-            (m, a)
-            for (m, a) in all_modules
-            if m.classes or m.top_level_functions
+            (m, a) for (m, a) in all_modules if m.classes or m.top_level_functions
         ]
 
         counts: DefaultDict[str, int] = defaultdict(int)
@@ -94,9 +93,7 @@ class PUMLGenerator:
             content = renderers.gen_package_diagram(
                 pkg_mods, pkg_name, self.src_root.name
             )
-            p = self.out_root / dir_key / "Package" / (
-                f"{pkg_name}-package.puml"
-            )
+            p = self.out_root / dir_key / "Package" / (f"{pkg_name}-package.puml")
             counts["package"] += 1
             if dry_run:
                 written.append(p)

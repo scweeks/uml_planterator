@@ -1,7 +1,6 @@
 import json
-from queue import Queue
- 
 from pathlib import Path
+from queue import Queue
 
 from uml_planterator.lsp.jdtls_client import JDTLSClient
 
@@ -65,9 +64,7 @@ def test_reader_invalid_json_and_dispatch():
     client._reader_loop()
 
     # Now, valid response with id and ensure it's dispatched
-    body = json.dumps({"jsonrpc": "2.0", "id": 1, "result": {}}).encode(
-        "utf-8"
-    )
+    body = json.dumps({"jsonrpc": "2.0", "id": 1, "result": {}}).encode("utf-8")
     hdr = f"Content-Length: {len(body)}\r\n".encode("ascii")
     client = JDTLSClient(["java"], Path("."))
     client._proc = FakeProc(stdout=FakeStdout(hdr, body))

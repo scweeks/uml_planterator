@@ -1,10 +1,11 @@
 """Python adapter implementing the Adapter ABC using existing parsers."""
+
 from __future__ import annotations
 
 from pathlib import Path
 
-from uml_planterator.adapters.base import Adapter
 from uml_planterator import parsers
+from uml_planterator.adapters.base import Adapter
 
 
 class PythonAdapter(Adapter):

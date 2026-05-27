@@ -3,15 +3,15 @@
 If `UML_PLANETATOR_JDTLS` env var is not set or JDT LS cannot be started,
 this adapter falls back to the `java_javalang_adapter` implementation.
 """
+
 from __future__ import annotations
 
 import os
 from pathlib import Path
 from typing import Optional
 
-from uml_planterator.adapters.base import Adapter, AdapterError
 from uml_planterator import models
-
+from uml_planterator.adapters.base import Adapter, AdapterError
 
 try:
     from uml_planterator.lsp.jdtls_client import JDTLSClient
@@ -20,9 +20,7 @@ except ImportError:  # pragma: no cover - import-time fallback handling
 
 
 class JavaJDTAdapter(Adapter):
-    def __init__(
-        self, jdtls_client_factory: Optional[callable] = None
-    ) -> None:
+    def __init__(self, jdtls_client_factory: Optional[callable] = None) -> None:
         self._jdtls_client_factory = jdtls_client_factory
 
     @property
@@ -42,11 +40,7 @@ class JavaJDTAdapter(Adapter):
 
     def parse_source(self, path: Path, source: str) -> models.ModuleInfo:
         jdtls_jar = os.environ.get("UML_PLANETATOR_JDTLS")
-        if (
-            not jdtls_jar
-            or not Path(jdtls_jar).exists()
-            or JDTLSClient is None
-        ):
+        if not jdtls_jar or not Path(jdtls_jar).exists() or JDTLSClient is None:
             # Fallback path should either return a ModuleInfo or raise
             try:
                 from uml_planterator.adapters.java_javalang_adapter import (
@@ -55,9 +49,7 @@ class JavaJDTAdapter(Adapter):
 
                 return JavaJavalangAdapter().parse_source(path, source)
             except Exception as exc:
-                raise AdapterError(
-                    "No suitable Java adapter available"
-                ) from exc
+                raise AdapterError("No suitable Java adapter available") from exc
 
         # Start a temporary workspace rooted at the file's parent
         workspace = path.parent
@@ -93,9 +85,7 @@ class JavaJDTAdapter(Adapter):
                         attributes.append(models.AttributeInfo(name=c_name))
 
                 classes.append(
-                    models.ClassInfo(
-                        name=name, attributes=attributes, methods=methods
-                    )
+                    models.ClassInfo(name=name, attributes=attributes, methods=methods)
                 )
 
             module = models.ModuleInfo(

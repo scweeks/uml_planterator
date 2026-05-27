@@ -21,9 +21,7 @@ def test_anon_class_name_and_declarators_none(monkeypatch, tmp_path: Path):
             self.package = None
             self.types = [TypeDecl()]
 
-    monkeypatch.setattr(
-        "javalang.parse.parse", lambda src: Tree(), raising=False
-    )
+    monkeypatch.setattr("javalang.parse.parse", lambda src: Tree(), raising=False)
 
     adapter = JavaJavalangAdapter()
     src = tmp_path / "AN.java"
@@ -64,9 +62,7 @@ def test_protected_visibility(monkeypatch, tmp_path: Path):
             self.package = None
             self.types = [TypeDecl()]
 
-    monkeypatch.setattr(
-        "javalang.parse.parse", lambda src: Tree(), raising=False
-    )
+    monkeypatch.setattr("javalang.parse.parse", lambda src: Tree(), raising=False)
     adapter = JavaJavalangAdapter()
     src = tmp_path / "Prot.java"
     src.write_text("class Prot{}")

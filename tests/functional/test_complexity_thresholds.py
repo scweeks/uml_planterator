@@ -1,6 +1,6 @@
 from pathlib import Path
 
-from uml_planterator import registry, generator
+from uml_planterator import generator, registry
 
 
 class CCWrapper:

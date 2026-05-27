@@ -6,17 +6,18 @@ over stdio, and perform basic request/response handling. It is not a
 fully-featured LSP client — it's intentionally small to be testable and
 expandable.
 """
+
 from __future__ import annotations
 
-import json
-import threading
-import subprocess
 import itertools
-from pathlib import Path
-from queue import Queue, Empty
-from typing import Any, Dict, Optional
+import json
 import os
+import subprocess
+import threading
 import time
+from pathlib import Path
+from queue import Empty, Queue
+from typing import Any, Dict, Optional
 
 
 class JDTLSClient:
@@ -40,9 +41,7 @@ class JDTLSClient:
         proc_factory: Optional[callable] = None,
     ) -> None:
         # Basic input validation to avoid shell-injection style misuse:
-        if not isinstance(cmd, list) or not all(
-            isinstance(x, str) for x in cmd
-        ):
+        if not isinstance(cmd, list) or not all(isinstance(x, str) for x in cmd):
             raise ValueError("cmd must be a list of strings")
         if not isinstance(workspace, Path):
             raise ValueError("workspace must be a pathlib.Path")
@@ -78,9 +77,7 @@ class JDTLSClient:
             raise RuntimeError("Failed to open JDT LS stdio pipes")
 
         self._running = True
-        self._reader_thread = threading.Thread(
-            target=self._reader_loop, daemon=True
-        )
+        self._reader_thread = threading.Thread(target=self._reader_loop, daemon=True)
         self._reader_thread.start()
 
     def stop(self) -> None:
@@ -217,9 +214,7 @@ class JDTLSClient:
         finally:
             self._pending.pop(req_id, None)
 
-    def notify(
-        self, method: str, params: Optional[Dict[str, Any]] = None
-    ) -> None:
+    def notify(self, method: str, params: Optional[Dict[str, Any]] = None) -> None:
         payload: Dict[str, Any] = {"jsonrpc": "2.0", "method": method}
         if params is not None:
             payload["params"] = params

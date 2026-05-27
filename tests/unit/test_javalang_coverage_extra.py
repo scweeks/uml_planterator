@@ -1,12 +1,11 @@
 import builtins
-from types import SimpleNamespace
 from pathlib import Path
+from types import SimpleNamespace
+
 from uml_planterator.adapters.java_javalang_adapter import JavaJavalangAdapter
 
 
-def test_fallback_to_regex_adapter_when_javalang_missing(
-    monkeypatch, tmp_path: Path
-):
+def test_fallback_to_regex_adapter_when_javalang_missing(monkeypatch, tmp_path: Path):
     # Force ImportError when importing 'javalang'
     real_import = builtins.__import__
 
@@ -60,9 +59,7 @@ def test_default_visibility_and_empty_package(monkeypatch, tmp_path: Path):
             self.package = DummyPackage()
             self.types = [TypeDecl()]
 
-    monkeypatch.setattr(
-        "javalang.parse.parse", lambda src: Tree(), raising=False
-    )
+    monkeypatch.setattr("javalang.parse.parse", lambda src: Tree(), raising=False)
 
     adapter = JavaJavalangAdapter()
     src = tmp_path / "D.java"
@@ -129,9 +126,7 @@ def test_count_various_branch_nodes(monkeypatch, tmp_path: Path):
             self.package = None
             self.types = [TypeDecl()]
 
-    monkeypatch.setattr(
-        "javalang.parse.parse", lambda src: Tree(), raising=False
-    )
+    monkeypatch.setattr("javalang.parse.parse", lambda src: Tree(), raising=False)
 
     adapter = JavaJavalangAdapter()
     src = tmp_path / "B.java"
@@ -166,9 +161,7 @@ def test_return_type_attrerror_branch(monkeypatch, tmp_path: Path):
             self.package = None
             self.types = [TypeDecl()]
 
-    monkeypatch.setattr(
-        "javalang.parse.parse", lambda src: Tree(), raising=False
-    )
+    monkeypatch.setattr("javalang.parse.parse", lambda src: Tree(), raising=False)
 
     adapter = JavaJavalangAdapter()
     src = tmp_path / "R.java"
@@ -205,9 +198,7 @@ def test_inner_javalang_import_failure_simulated(monkeypatch, tmp_path: Path):
             self.types = [TypeDecl()]
 
     monkeypatch.setenv("UML_PLANETATOR_TEST_JAVALANG_INNER_FAIL", "1")
-    monkeypatch.setattr(
-        "javalang.parse.parse", lambda src: Tree(), raising=False
-    )
+    monkeypatch.setattr("javalang.parse.parse", lambda src: Tree(), raising=False)
 
     adapter = JavaJavalangAdapter()
     src = tmp_path / "IX.java"

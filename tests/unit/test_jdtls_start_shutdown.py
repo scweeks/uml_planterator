@@ -1,8 +1,7 @@
 import io
-from types import SimpleNamespace
-from pathlib import Path
-
 import subprocess
+from pathlib import Path
+from types import SimpleNamespace
 
 from uml_planterator.lsp.jdtls_client import JDTLSClient
 
