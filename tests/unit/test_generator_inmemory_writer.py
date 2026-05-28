@@ -1,6 +1,6 @@
 from pathlib import Path
 
-from uml_planterator import models, registry
+from uml_planterator import models
 from uml_planterator.generator import PUMLGenerator
 
 
@@ -35,7 +35,7 @@ class InMemoryWriter:
         self.writes.append((str(path), content))
 
 
-def test_generator_writes_with_inmemory_writer(tmp_path, monkeypatch):
+def test_generator_writes_with_inmemory_writer(tmp_path):
     src = tmp_path / "src"
     out = tmp_path / "out"
     src.mkdir()
@@ -45,10 +45,9 @@ def test_generator_writes_with_inmemory_writer(tmp_path, monkeypatch):
     f = src / "module_a.py"
     f.write_text("class Foo: pass\n")
 
-    # register fake adapter
-    monkeypatch.setattr(registry, "get_all_adapters", lambda: [FakeAdapter()])
-
-    gen = PUMLGenerator(src, out, verbose=False)
+    gen = PUMLGenerator(
+        src, out, verbose=False, adapters_factory=lambda: [FakeAdapter()]
+    )
     writer = InMemoryWriter()
     gen.writer = writer
 

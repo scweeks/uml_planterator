@@ -11,18 +11,31 @@ from pathlib import Path
 from typing import DefaultDict, Dict, List
 
 from uml_planterator import io as io_mod
-from uml_planterator import models, registry, renderers
+from uml_planterator import models, renderers
 from uml_planterator.adapters.base import AdapterError
 
 
 class PUMLGenerator:
-    def __init__(self, src_root: Path, out_root: Path, verbose: bool = False):
+    def __init__(
+        self,
+        src_root: Path,
+        out_root: Path,
+        verbose: bool = False,
+        adapters_factory=None,
+    ):
         self.src_root = Path(src_root)
         self.out_root = Path(out_root)
         self.verbose = verbose
         # `writer` is any object with a `write_puml(content, path, verbose)`
         # method. It defaults to the module-level `io.write_puml` helper.
         self.writer = None
+        # adapters_factory is a callable returning an iterable of adapters.
+        # Default preserves previous behavior by importing registry lazily.
+        if adapters_factory is None:
+            from uml_planterator import registry as _registry
+
+            adapters_factory = _registry.get_all_adapters
+        self._adapters_factory = adapters_factory
 
     def _discover_and_parse(self) -> list[tuple[models.ModuleInfo, object]]:
         """Discover source files and parse them with registered adapters.
@@ -31,7 +44,7 @@ class PUMLGenerator:
         """
         all_modules: list[tuple[models.ModuleInfo, object]] = []
         seen = set()
-        for adapter in registry.get_all_adapters():
+        for adapter in self._adapters_factory():
             for ext in adapter.supported_extensions():
                 for p in sorted(self.src_root.rglob(f"*{ext}")):
                     if p in seen:
