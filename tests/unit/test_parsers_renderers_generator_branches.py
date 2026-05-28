@@ -1,6 +1,6 @@
 from pathlib import Path
 
-from uml_planterator import models, parsers, renderers
+from uml_planterator import models, renderers
 from uml_planterator.generator import PUMLGenerator
 
 
@@ -59,28 +59,9 @@ def test_sequence_activity_state_usecase():
     assert "actor m2User" in uc
 
 
-def test_parse_module_branches(tmp_path):
-    src_root = tmp_path / "srcroot"
-    src_root.mkdir()
-    p = src_root / "pkg"
-    p.mkdir()
-    f = p / "mod.py"
-
-    # Syntax error
-    src = "def bad(:\n"
-    assert parsers.parse_module_from_source(f, src, src_root) is None
-
-    # relative import -> internal_imports
-    src = "from .sub import x\n"
-    mi = parsers.parse_module_from_source(f, src, src_root)
-    assert "sub" in mi.internal_imports
-
-    # public exports and main detection and cli detection
-    src = "__all__ = ['a']\nimport click\ndef main():\n    pass\n"
-    mi = parsers.parse_module_from_source(f, src, src_root)
-    assert "a" in mi.public_exports
-    assert mi.has_main
-    assert mi.has_cli
+# Parser-specific branches are covered in dedicated parser tests.
+# The duplicate parser checks were moved to
+# tests/unit/test_parsers_additional_branches.py to avoid overlap.
 
 
 def test_generator_dry_run_and_complexity_fallback(tmp_path):
@@ -100,7 +81,7 @@ def test_generator_dry_run_and_complexity_fallback(tmp_path):
             return [".py"]
 
         @staticmethod
-        def parse_source(path: Path, src: str):
+        def parse_source(path: Path, _src: str):
             cls = models.ClassInfo(name="Foo")
             return models.ModuleInfo(
                 name="m",
