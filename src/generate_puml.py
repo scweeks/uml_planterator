@@ -14,7 +14,7 @@ from pathlib import Path
 from uml_planterator.generator import PUMLGenerator
 
 
-def main() -> int:
+def main(argv: list[str] | None = None) -> int:
     parser = argparse.ArgumentParser(
         description="Generate PlantUML diagrams from a Python source tree."
     )
@@ -22,7 +22,7 @@ def main() -> int:
     parser.add_argument("--out", default="docs/UML/Source")
     parser.add_argument("--verbose", "-v", action="store_true")
     parser.add_argument("--dry-run", action="store_true")
-    args = parser.parse_args()
+    args = parser.parse_args(argv)
 
     src_root = Path(args.src)
     out_root = Path(args.out)
