@@ -73,9 +73,7 @@ class PUMLGenerator:
         # Return the writer object to use; module `io` has `write_puml`.
         return self.writer if self.writer is not None else io_mod
 
-    def _maybe_write(self, content: str, path: Path, dry_run: bool) -> None:
-        if dry_run:
-            return
+    def _maybe_write(self, content: str, path: Path) -> None:
         self._writer().write_puml(content, path, self.verbose)
 
     def run(self, dry_run: bool = False) -> dict:  # noqa: C901
@@ -97,7 +95,7 @@ class PUMLGenerator:
                 if dry_run:
                     written.append(p)
                 else:
-                    self._maybe_write(content, p, dry_run)
+                    self._maybe_write(content, p)
 
                 # If complexity is high, produce a complexity sub-diagram.
                 try:
@@ -118,7 +116,7 @@ class PUMLGenerator:
                     if dry_run:
                         written.append(cp)
                     else:
-                        self._maybe_write(c_content, cp, dry_run)
+                        self._maybe_write(c_content, cp)
 
         # Package diagram per directory
         pkg_groups: dict[str, list[models.ModuleInfo]] = {}
@@ -138,7 +136,7 @@ class PUMLGenerator:
             if dry_run:
                 written.append(p)
             else:
-                self._maybe_write(content, p, dry_run)
+                self._maybe_write(content, p)
 
         # System-level package overview
         content = renderers.gen_system_package_diagram(
@@ -149,6 +147,6 @@ class PUMLGenerator:
         if dry_run:
             written.append(p)
         else:
-            self._maybe_write(content, p, dry_run)
+            self._maybe_write(content, p)
 
         return {"counts": dict(counts), "paths": [str(p) for p in written]}
