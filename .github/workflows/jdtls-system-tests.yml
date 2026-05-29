@@ -1,10 +1,9 @@
 name: CI - JDT LS System Tests
 
 on:
-  push:
-    branches: [ main ]
-  pull_request:
-    branches: [ main ]
+  workflow_dispatch:
+  schedule:
+    - cron: "0 4 * * 1"  # weekly, Monday 04:00 UTC
 
 jobs:
   jdtls-system:

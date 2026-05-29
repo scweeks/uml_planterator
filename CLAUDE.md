@@ -39,12 +39,79 @@ Key modules:
 ```bash
 poetry install
 poetry run pytest                       # full suite
-poetry run pytest --cov=src --cov-report=term-missing
+poetry run pytest --cov=src --cov-branch --cov-report=term-missing --cov-fail-under=100
 poetry run ruff check src tests
 poetry run ruff format src tests
 poetry run mypy src
-poetry run pre-commit run --all-files
+pre-commit run --all-files              # run all hooks on every file
 ```
+
+---
+
+## Pre-commit Hooks
+
+Pre-commit runs automatically on every `git commit`. Hooks execute in their own isolated environments managed by pre-commit — **do not invoke black or ruff directly from the project venv to replicate hook behaviour**; always use `pre-commit run`.
+
+### Configured hooks (`.pre-commit-config.yaml`)
+
+| Hook | Tool | Version | What it does |
+|---|---|---|---|
+| `black` | psf/black | 26.5.1 | Formats Python source to 88-char line length |
+| `ruff` | charliermarsh/ruff-pre-commit | v0.15.14 | Lints and auto-fixes E/F/W/I/UP violations (`--fix`) |
+| `isort` | pre-commit/mirrors-isort | v5.10.1 | Sorts imports with black-compatible profile |
+| `end-of-file-fixer` | pre-commit/pre-commit-hooks | v6.0.0 | Ensures every file ends with a single newline |
+| `trailing-whitespace` | pre-commit/pre-commit-hooks | v6.0.0 | Strips trailing whitespace |
+| `check-yaml` | pre-commit/pre-commit-hooks | v6.0.0 | Validates YAML syntax |
+
+### Installation
+
+```powershell
+pre-commit install          # installs the git hook — run once after cloning
+pre-commit install --hook-type commit-msg   # optional: enforce commit message format
+```
+
+### Running hooks manually
+
+```powershell
+pre-commit run --all-files          # apply all hooks to every tracked file
+pre-commit run black --all-files    # run a single hook by id
+pre-commit run ruff --all-files
+pre-commit autoupdate               # bump hook revisions to latest tags
+```
+
+### Safe commit workflow
+
+Hooks auto-fix files, which creates a conflict when staged and unstaged changes coexist in the same file (`MM` status). Always follow this sequence:
+
+```powershell
+# 1. Edit files
+# 2. Stage your changes
+git add src/... tests/...
+
+# 3. Check for split-staged files — any MM or RM entries are a problem
+git status --short
+
+# 4. If MM/RM entries exist, apply fixes first
+pre-commit run --all-files
+
+# 5. Re-stage the formatter fixes
+git add src/... tests/...   # only the files that were just modified
+
+# 6. Commit — hooks now run cleanly (no unstaged changes to conflict with)
+git commit -m "type(scope): summary"
+```
+
+### Why MM causes hook failures
+
+Pre-commit stashes unstaged changes before running hooks so it only lints what will actually be committed. When hooks auto-fix staged files and pre-commit tries to pop the stash, Git detects a conflict, rolls back all hook fixes, and aborts the commit. The root cause is always a file appearing in both the index and the working tree with different content.
+
+### Hook failure meanings
+
+| Exit code | Meaning | Action |
+|---|---|---|
+| Files modified by hook | Hook auto-fixed violations | Re-stage the modified files and retry |
+| Hook reports errors (no fix) | Violations that require manual edits | Fix the reported lines, stage, retry |
+| `check-yaml` fails | Invalid YAML syntax | Fix the YAML file |
 
 ---
 
@@ -238,7 +305,7 @@ tests/
 - **Markers** — `system` tests require `@pytest.mark.system` and are excluded from the default run (`-m "not system"`).
 - **Mocking** — use `unittest.mock.MagicMock` / `patch` only at I/O boundaries (`io.write_puml`, `JDTLSClient`). Never mock domain logic or pure functions.
 - **Assertions** — use plain `assert`; never use `assertEqual`/`assertTrue` from `unittest`.
-- **Coverage** — maintain ≥ 90% branch coverage on `src/`. Use `# pragma: no cover` only for `__main__` guards and `raise NotImplementedError` stubs.
+- **Coverage** — target is **100% line, branch, and path coverage** on `src/`. Use `# pragma: no cover` only for `__main__` guards and `raise NotImplementedError` stubs — never to hide untested logic. Every branch of every `if`, `try/except`, and conditional expression must have a test that exercises it.
 - **Test isolation** — each test must be self-contained. No shared mutable state between tests. The `_reset_safe_id_map` autouse fixture enforces this for `utils`.
 - **Naming** — `test_<function_or_class>_<scenario>`. Example: `test_parse_source_raises_adapter_error_on_invalid_java`.
 
@@ -317,7 +384,7 @@ jobs:
       - bandit -r src -ll
   test:
     steps:
-      - pytest --cov=src --cov-fail-under=90 -m "not system"
+      - pytest --cov=src --cov-branch --cov-fail-under=100 -m "not system"
   audit:
     steps:
       - pip-audit
@@ -379,7 +446,7 @@ File reads happen in `PUMLGenerator._discover_and_parse()`. File writes happen i
 Before marking a PR ready:
 
 - [ ] Every new public function/method has a corresponding test (TDD red-green cycle completed).
-- [ ] Branch coverage ≥ 90% (`pytest --cov=src --cov-fail-under=90`).
+- [ ] 100% line, branch, and path coverage (`pytest --cov=src --cov-branch --cov-fail-under=100`).
 - [ ] No `isinstance` chains where polymorphism should be used.
 - [ ] No new singletons; dependency injection used instead.
 - [ ] All `subprocess` calls use list args, not `shell=True`.

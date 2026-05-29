@@ -18,6 +18,8 @@ ruff = "^0.12"
 mypy = "^1.10"
 pre-commit = "^4.0"
 poetry = "^1.8"
+bandit = "^1.8"
+pip-audit = "^2.7"
 
 [tool.poetry.scripts]
 generate-puml = "generate_puml:main"
@@ -29,9 +31,11 @@ build-backend = "poetry.core.masonry.api"
 [tool.pytest.ini_options]
 testpaths = ["tests"]
 markers = ["system: mark tests as system-level that require external services"]
+addopts = "--cov=src --cov-branch --cov-report=term-missing -m 'not system'"
 
 [tool.coverage.run]
 source = ["src"]
+branch = true
 omit = ["*/.venv/*", "*/tests/*"]
 
 [tool.coverage.report]

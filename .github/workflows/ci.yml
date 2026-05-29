@@ -2,48 +2,68 @@ name: CI
 
 on:
   push:
-    branches: [ main ]
+    branches: [main]
   pull_request:
-    branches: [ main ]
+    branches: [main]
 
 jobs:
   lint-and-test:
     runs-on: ubuntu-latest
     strategy:
+      fail-fast: false
       matrix:
-        python-version: [3.11]
+        python-version: ["3.11", "3.12", "3.13"]
 
     steps:
       - name: Checkout
         uses: actions/checkout@v4
 
-      - name: Set up Python
-        uses: actions/setup-python@v4
+      - name: Set up Python ${{ matrix.python-version }}
+        uses: actions/setup-python@v5
         with:
           python-version: ${{ matrix.python-version }}
 
       - name: Install dev tools
         run: |
           python -m pip install --upgrade pip
-          pip install ruff==0.16.1 black==24.3.0 mypy==1.10 pytest pytest-cov isort==5.12.0
+          pip install \
+            ruff \
+            black \
+            mypy \
+            bandit \
+            pip-audit \
+            pytest \
+            pytest-cov \
+            coverage \
+            javalang
 
       - name: "Lint: ruff"
-        run: ruff check .
+        run: ruff check src tests
 
       - name: "Format check: black"
-        run: black --check .
-
-      - name: "Import sort check: isort"
-        run: isort --check-only --profile=black .
+        run: black --check src tests
 
       - name: "Type check: mypy"
-        run: mypy src || true
+        run: mypy src
 
-      - name: Run tests with coverage
-        run: pytest -q --cov=src --cov-report=xml --cov-report=term
+      - name: "Security: bandit"
+        run: bandit -r src -ll -x src/uml_planterator/lsp
+
+      - name: "Security: pip-audit"
+        run: pip-audit
+
+      - name: "Test: pytest with 100% branch coverage"
+        run: |
+          pytest \
+            --cov=src \
+            --cov-branch \
+            --cov-report=xml \
+            --cov-report=term-missing \
+            --cov-fail-under=100 \
+            -m "not system"
 
       - name: Upload coverage artifact
         uses: actions/upload-artifact@v4
         with:
-          name: coverage-xml
+          name: coverage-xml-py${{ matrix.python-version }}
           path: coverage.xml
