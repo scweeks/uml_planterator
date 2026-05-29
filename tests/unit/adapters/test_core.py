@@ -111,3 +111,33 @@ def test_compute_complexity_available():
     assert hasattr(adapter, "compute_complexity")
     val = adapter.compute_complexity(M())
     assert isinstance(val, int)
+
+
+def test_c_adapter_compute_complexity(tmp_path):
+    adapter = registry.get_adapter("c")
+    mod = models.ModuleInfo(name="m", package="p", rel_path="m.c", classes=[], cc=4)
+    assert adapter.compute_complexity(mod) == 4
+
+
+def test_cpp_adapter_compute_complexity(tmp_path):
+    adapter = registry.get_adapter("cpp")
+    mod = models.ModuleInfo(name="m", package="p", rel_path="m.cpp", classes=[], cc=7)
+    assert adapter.compute_complexity(mod) == 7
+
+
+def test_c_adapter_compute_complexity_missing_cc():
+    adapter = registry.get_adapter("c")
+
+    class NoCC:
+        pass
+
+    assert adapter.compute_complexity(NoCC()) == 1
+
+
+def test_cpp_adapter_compute_complexity_missing_cc():
+    adapter = registry.get_adapter("cpp")
+
+    class NoCC:
+        pass
+
+    assert adapter.compute_complexity(NoCC()) == 1
