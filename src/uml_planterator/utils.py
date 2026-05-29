@@ -4,10 +4,9 @@ from __future__ import annotations
 
 import ast
 import re
-from typing import Dict
 
 # Module-level id map for deterministic safe ids during a run.
-_id_map: Dict[str, str] = {}
+_id_map: dict[str, str] = {}
 
 
 def safe_id(name: str) -> str:
@@ -61,3 +60,8 @@ def vis(name: str) -> str:
 
 def is_dunder(name: str) -> bool:
     return name.startswith("__") and name.endswith("__")
+
+
+def reset_id_map() -> None:
+    """Clear the id map between generator runs to prevent cross-run pollution."""
+    _id_map.clear()

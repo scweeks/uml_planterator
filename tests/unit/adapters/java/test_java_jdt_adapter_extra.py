@@ -21,17 +21,17 @@ def test_jdt_adapter_fallback_when_no_jar(monkeypatch, tmp_path: Path):
 def test_jdt_adapter_raises_adapter_error_and_shuts_down(monkeypatch, tmp_path: Path):
     # Create a fake JDTLSClient that raises during request and record shutdown
     class FakeClient:
-        def __init__(self, cmd, workspace):
+        def __init__(self, _cmd, _workspace):
             self.started = False
             self.shutdown_called = False
 
         def start(self):
             self.started = True
 
-        def initialize(self, root_uri):
+        def initialize(self, _root_uri):
             return {}
 
-        def open_text_document(self, path, source):
+        def open_text_document(self, _path, _source):
             return None
 
         def request(self, method, params=None):

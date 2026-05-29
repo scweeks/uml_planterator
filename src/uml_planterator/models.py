@@ -5,7 +5,6 @@ to improve testability and separation of concerns.
 """
 
 from dataclasses import dataclass, field
-from typing import List, Tuple
 
 
 @dataclass
@@ -20,7 +19,7 @@ class Param:
 @dataclass
 class MethodInfo:
     name: str
-    params: List[Param] = field(default_factory=list)
+    params: list[Param] = field(default_factory=list)
     return_type: str = ""
     visibility: str = "+"
     is_static: bool = False
@@ -28,9 +27,9 @@ class MethodInfo:
     is_property: bool = False
     is_abstract: bool = False
     cc: int = 1
-    calls: List[Tuple[str, str]] = field(default_factory=list)
-    raises: List[str] = field(default_factory=list)
-    state_transitions: List[Tuple[str, str, str]] = field(default_factory=list)
+    calls: list[tuple[str, str]] = field(default_factory=list)
+    raises: list[str] = field(default_factory=list)
+    state_transitions: list[tuple[str, str, str]] = field(default_factory=list)
     docstring: str = ""
     lineno: int = 0
     line_count: int = 0
@@ -47,15 +46,15 @@ class AttributeInfo:
 @dataclass
 class ClassInfo:
     name: str
-    bases: List[str] = field(default_factory=list)
-    attributes: List[AttributeInfo] = field(default_factory=list)
-    methods: List[MethodInfo] = field(default_factory=list)
-    decorators: List[str] = field(default_factory=list)
+    bases: list[str] = field(default_factory=list)
+    attributes: list[AttributeInfo] = field(default_factory=list)
+    methods: list[MethodInfo] = field(default_factory=list)
+    decorators: list[str] = field(default_factory=list)
     docstring: str = ""
     is_abstract: bool = False
     is_dataclass: bool = False
     has_state: bool = False
-    state_attributes: List[str] = field(default_factory=list)
+    state_attributes: list[str] = field(default_factory=list)
     cc: int = 1
 
 
@@ -64,12 +63,12 @@ class ModuleInfo:
     name: str
     package: str
     rel_path: str
-    classes: List[ClassInfo] = field(default_factory=list)
-    top_level_functions: List[MethodInfo] = field(default_factory=list)
-    imports: List[str] = field(default_factory=list)
-    internal_imports: List[str] = field(default_factory=list)
+    classes: list[ClassInfo] = field(default_factory=list)
+    top_level_functions: list[MethodInfo] = field(default_factory=list)
+    imports: list[str] = field(default_factory=list)
+    internal_imports: list[str] = field(default_factory=list)
     has_main: bool = False
     has_cli: bool = False
     is_init: bool = False
-    public_exports: List[str] = field(default_factory=list)
+    public_exports: list[str] = field(default_factory=list)
     cc: int = 1

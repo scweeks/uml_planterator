@@ -7,7 +7,6 @@ from __future__ import annotations
 
 import ast
 from pathlib import Path
-from typing import Optional
 
 from uml_planterator import complexity, models, utils
 
@@ -153,7 +152,7 @@ def parse_class(cls: ast.ClassDef) -> models.ClassInfo:  # noqa: C901
 
 def parse_module_from_source(  # noqa: C901
     py_file: Path, source: str, src_root: Path
-) -> Optional[models.ModuleInfo]:
+) -> models.ModuleInfo | None:
     try:
         tree = ast.parse(source, filename=str(py_file))
     except SyntaxError:

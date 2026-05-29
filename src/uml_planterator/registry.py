@@ -10,7 +10,6 @@ from __future__ import annotations
 import importlib
 import os
 from pathlib import Path
-from typing import Dict
 
 from uml_planterator.adapters.c_adapter import CAdapter
 from uml_planterator.adapters.cpp_adapter import CppAdapter
@@ -46,7 +45,7 @@ class AdapterRegistry:
     """
 
     def __init__(self) -> None:
-        self._map: Dict[str, object] = {}
+        self._map: dict[str, object] = {}
 
     def register(self, language: str, adapter: object) -> None:
         self._map[language.lower()] = adapter

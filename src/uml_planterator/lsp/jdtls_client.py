@@ -17,7 +17,7 @@ import threading
 import time
 from pathlib import Path
 from queue import Empty, Queue
-from typing import Any, Dict, Optional
+from typing import Any
 
 
 class JDTLSClient:
@@ -37,8 +37,8 @@ class JDTLSClient:
         cmd: list[str],
         workspace: Path,
         timeout: float = 10.0,
-        proc: Optional[subprocess.Popen] = None,
-        proc_factory: Optional[callable] = None,
+        proc: subprocess.Popen | None = None,
+        proc_factory: callable | None = None,
     ) -> None:
         # Basic input validation to avoid shell-injection style misuse:
         if not isinstance(cmd, list) or not all(isinstance(x, str) for x in cmd):
@@ -49,11 +49,11 @@ class JDTLSClient:
         self.cmd = cmd
         self.workspace = workspace
         self.timeout = timeout
-        self._proc: Optional[subprocess.Popen] = proc
+        self._proc: subprocess.Popen | None = proc
         self._proc_factory = proc_factory
-        self._reader_thread: Optional[threading.Thread] = None
+        self._reader_thread: threading.Thread | None = None
         self._writer_lock = threading.Lock()
-        self._pending: Dict[int, Queue] = {}
+        self._pending: dict[int, Queue] = {}
         self._id_iter = itertools.count(1)
         self._running = False
 
@@ -177,7 +177,7 @@ class JDTLSClient:
                         q.put(msg)
                 # notifications are ignored by default; adapters can extend
 
-    def _send(self, payload: Dict[str, Any]) -> None:
+    def _send(self, payload: dict[str, Any]) -> None:
         assert self._proc and self._proc.stdin
         data = json.dumps(payload, separators=(",", ":")).encode("utf-8")
         header = f"Content-Length: {len(data)}\r\n\r\n".encode("ascii")
@@ -187,14 +187,14 @@ class JDTLSClient:
             self._proc.stdin.flush()
 
     def request(
-        self, method: str, params: Optional[Dict[str, Any]] = None
-    ) -> Dict[str, Any]:
+        self, method: str, params: dict[str, Any] | None = None
+    ) -> dict[str, Any]:
         """Synchronous request: send request and wait for response.
 
         Raises `TimeoutError` on timeout.
         """
         req_id = next(self._id_iter)
-        payload: Dict[str, Any] = {
+        payload: dict[str, Any] = {
             "jsonrpc": "2.0",
             "id": req_id,
             "method": method,
@@ -214,8 +214,8 @@ class JDTLSClient:
         finally:
             self._pending.pop(req_id, None)
 
-    def notify(self, method: str, params: Optional[Dict[str, Any]] = None) -> None:
-        payload: Dict[str, Any] = {"jsonrpc": "2.0", "method": method}
+    def notify(self, method: str, params: dict[str, Any] | None = None) -> None:
+        payload: dict[str, Any] = {"jsonrpc": "2.0", "method": method}
         if params is not None:
             payload["params"] = params
         self._send(payload)
@@ -223,7 +223,7 @@ class JDTLSClient:
     # Convenience helpers (minimal):
     def initialize(
         self, root_uri: str, client_name: str = "uml_planterator"
-    ) -> Dict[str, Any]:
+    ) -> dict[str, Any]:
         params = {
             "processId": None,
             "rootUri": root_uri,

@@ -8,7 +8,6 @@ from __future__ import annotations
 
 import os
 from pathlib import Path
-from typing import Optional
 
 from uml_planterator import models
 from uml_planterator.adapters.base import Adapter, AdapterError
@@ -20,12 +19,14 @@ except ImportError:  # pragma: no cover - import-time fallback handling
 
 
 class JavaJDTAdapter(Adapter):
-    def __init__(self, jdtls_client_factory: Optional[callable] = None) -> None:
+    """Adapter backed by JDT Language Server for rich Java ModuleInfo."""
+
+    def __init__(self, jdtls_client_factory: callable | None = None) -> None:
         self._jdtls_client_factory = jdtls_client_factory
 
     @property
     def language(self) -> str:
-        return "java-jdtls"
+        return "java"
 
     def supported_extensions(self) -> list[str]:
         return [".java"]
@@ -40,7 +41,8 @@ class JavaJDTAdapter(Adapter):
 
     def parse_source(self, path: Path, source: str) -> models.ModuleInfo:
         jdtls_jar = os.environ.get("UML_PLANETATOR_JDTLS")
-        if not jdtls_jar or not Path(jdtls_jar).exists() or JDTLSClient is None:
+        no_jdtls = not jdtls_jar or not Path(jdtls_jar).exists() or JDTLSClient is None
+        if no_jdtls:
             # Fallback path should either return a ModuleInfo or raise
             try:
                 from uml_planterator.adapters.java_javalang_adapter import (
@@ -85,7 +87,11 @@ class JavaJDTAdapter(Adapter):
                         attributes.append(models.AttributeInfo(name=c_name))
 
                 classes.append(
-                    models.ClassInfo(name=name, attributes=attributes, methods=methods)
+                    models.ClassInfo(
+                        name=name,
+                        attributes=attributes,
+                        methods=methods,
+                    )
                 )
 
             module = models.ModuleInfo(

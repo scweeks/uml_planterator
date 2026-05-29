@@ -20,7 +20,7 @@ class FakeProcBase:
 
 
 def test_malformed_header_is_ignored(monkeypatch):
-    # Header doesn't start with Content-Length
+    # Header doesn't start with Content-Length — reader must not crash.
     data = b"X-Header: 10\r\n\r\n{'a':1}"
     proc = FakeProcBase(data)
     monkeypatch.setattr(subprocess, "Popen", lambda *a, **k: proc)
@@ -28,7 +28,7 @@ def test_malformed_header_is_ignored(monkeypatch):
     client = JDTLSClient(["java"], workspace=Path("."))
     client.start()
     client.stop()
-    assert True
+    assert not client._running
 
 
 def test_readline_raises_oserror(monkeypatch):
@@ -43,7 +43,7 @@ def test_readline_raises_oserror(monkeypatch):
     client = JDTLSClient(["java"], workspace=Path("."))
     client.start()
     client.stop()
-    assert True
+    assert not client._running
 
 
 def test_request_timeout_raises(monkeypatch):

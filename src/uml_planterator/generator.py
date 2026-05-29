@@ -8,10 +8,9 @@ from __future__ import annotations
 
 from collections import defaultdict
 from pathlib import Path
-from typing import DefaultDict, Dict, List
 
 from uml_planterator import io as io_mod
-from uml_planterator import models, renderers
+from uml_planterator import models, renderers, utils
 from uml_planterator.adapters.base import AdapterError
 
 
@@ -56,6 +55,12 @@ class PUMLGenerator:
                     except AdapterError:
                         mod = None
                     if mod:
+                        # Normalise rel_path to be relative to the actual
+                        # src_root; adapters only know path, not the root.
+                        try:
+                            mod.rel_path = str(p.relative_to(self.src_root))
+                        except ValueError:
+                            pass
                         all_modules.append((mod, adapter))
         return all_modules
 
@@ -73,12 +78,13 @@ class PUMLGenerator:
             return
         self._writer().write_puml(content, path, self.verbose)
 
-    def run(self, dry_run: bool = False) -> Dict:  # noqa: C901
+    def run(self, dry_run: bool = False) -> dict:  # noqa: C901
+        utils.reset_id_map()
         all_modules = self._discover_and_parse()
         content_mods = self._filter_content_modules(all_modules)
 
-        counts: DefaultDict[str, int] = defaultdict(int)
-        written: List[Path] = []
+        counts: defaultdict[str, int] = defaultdict(int)
+        written: list[Path] = []
 
         # Class diagrams
         for module, adapter in content_mods:
@@ -115,7 +121,7 @@ class PUMLGenerator:
                         self._maybe_write(c_content, cp, dry_run)
 
         # Package diagram per directory
-        pkg_groups: Dict[str, List[models.ModuleInfo]] = {}
+        pkg_groups: dict[str, list[models.ModuleInfo]] = {}
         for mod, _ in content_mods:
             key = str(Path(mod.rel_path).parent)
             pkg_groups.setdefault(key, []).append(mod)

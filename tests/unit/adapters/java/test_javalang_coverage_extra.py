@@ -173,10 +173,10 @@ def test_return_type_attrerror_branch(monkeypatch, tmp_path: Path):
     assert cls.methods[0].return_type == ""
 
 
-def test_inner_javalang_import_failure_simulated(monkeypatch, tmp_path: Path):
-    # When inner import fails, CC should remain the default 1
+def test_if_branch_increments_cc(monkeypatch, tmp_path: Path):
+    # _count_branches counts IfStatement; cc should be 1 (base) + 1 = 2.
     class IfStatement:
-        pass
+        children = []
 
     class Method:
         def __init__(self):
@@ -197,7 +197,6 @@ def test_inner_javalang_import_failure_simulated(monkeypatch, tmp_path: Path):
             self.package = None
             self.types = [TypeDecl()]
 
-    monkeypatch.setenv("UML_PLANETATOR_TEST_JAVALANG_INNER_FAIL", "1")
     monkeypatch.setattr("javalang.parse.parse", lambda src: Tree(), raising=False)
 
     adapter = JavaJavalangAdapter()
@@ -205,4 +204,4 @@ def test_inner_javalang_import_failure_simulated(monkeypatch, tmp_path: Path):
     src.write_text("class IX{}")
     mod = adapter.parse_source(src, src.read_text())
     assert mod is not None
-    assert mod.classes[0].methods[0].cc == 1
+    assert mod.classes[0].methods[0].cc == 2

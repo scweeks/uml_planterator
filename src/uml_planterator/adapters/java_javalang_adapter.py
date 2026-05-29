@@ -13,6 +13,32 @@ from pathlib import Path
 from uml_planterator import models
 from uml_planterator.adapters.base import Adapter
 
+_BRANCH_NODES = frozenset(
+    (
+        "IfStatement",
+        "ForStatement",
+        "WhileStatement",
+        "DoStatement",
+        "SwitchStatement",
+        "CatchClause",
+        "TernaryExpression",
+    )
+)
+
+
+def _count_branches(node) -> int:
+    """Recursively count branching constructs in a javalang AST node."""
+    if node is None:
+        return 0
+    total = 1 if type(node).__name__ in _BRANCH_NODES else 0
+    for child in getattr(node, "children", []) or []:
+        if isinstance(child, (list, tuple)):
+            for c in child:
+                total += _count_branches(c)
+        else:
+            total += _count_branches(child)
+    return total
+
 
 class JavaJavalangAdapter(Adapter):
     @property
@@ -104,47 +130,8 @@ class JavaJavalangAdapter(Adapter):
                 is_static = "static" in mmods
                 is_abstract = "abstract" in mmods
 
-                # Compute a simple cyclomatic complexity by traversing the
-                # method's AST and counting branching constructs.
-                cc = 1
-                try:
-                    # Allow tests to simulate javalang being unavailable for
-                    # the inner complexity counter by setting an env var.
-                    import os
-
-                    if os.environ.get("UML_PLANETATOR_TEST_JAVALANG_INNER_FAIL"):
-                        raise ImportError()
-
-                    import javalang  # type: ignore
-
-                    def _count_branches(node) -> int:
-                        if node is None:
-                            return 0
-                        total = 0
-                        ntype = type(node)
-                        nname = getattr(ntype, "__name__", "")
-                        if nname in (
-                            "IfStatement",
-                            "ForStatement",
-                            "WhileStatement",
-                            "DoStatement",
-                            "SwitchStatement",
-                            "CatchClause",
-                            "TernaryExpression",
-                        ):
-                            total += 1
-                        for child in getattr(node, "children", []) or []:
-                            if isinstance(child, (list, tuple)):
-                                for c in child:
-                                    total += _count_branches(c)
-                            else:
-                                total += _count_branches(child)
-                        return total
-
-                    cc += _count_branches(m)
-                except ImportError:
-                    # If javalang unexpectedly isn't available here, keep cc=1
-                    pass
+                # Compute a simple cyclomatic complexity by counting branches.
+                cc = 1 + _count_branches(m)
 
                 meth = models.MethodInfo(
                     name=getattr(m, "name", "<anon>"),
