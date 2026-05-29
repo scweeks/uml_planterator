@@ -7,7 +7,9 @@ this adapter falls back to the `java_javalang_adapter` implementation.
 from __future__ import annotations
 
 import os
+from collections.abc import Callable
 from pathlib import Path
+from typing import Any
 
 from uml_planterator import models
 from uml_planterator.adapters.base import Adapter, AdapterError
@@ -21,7 +23,7 @@ except ImportError:  # pragma: no cover - import-time fallback handling
 class JavaJDTAdapter(Adapter):
     """Adapter backed by JDT Language Server for rich Java ModuleInfo."""
 
-    def __init__(self, jdtls_client_factory: callable | None = None) -> None:
+    def __init__(self, jdtls_client_factory: Callable[..., Any] | None = None) -> None:
         self._jdtls_client_factory = jdtls_client_factory
 
     @property

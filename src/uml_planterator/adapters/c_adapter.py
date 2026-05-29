@@ -19,7 +19,7 @@ class CAdapter(Adapter):
     def supported_extensions(self) -> list[str]:
         return [".c", ".h"]
 
-    def parse_source(self, path: Path, source: str) -> models.ModuleInfo | None:
+    def parse_source(self, path: Path, source: str) -> models.ModuleInfo:
         module_name = path.stem
         rel = str(path.relative_to(path.parent))
         classes = []

@@ -11,7 +11,7 @@ from pathlib import Path
 
 from uml_planterator import io as io_mod
 from uml_planterator import models, renderers, utils
-from uml_planterator.adapters.base import AdapterError
+from uml_planterator.adapters.base import Adapter, AdapterError
 
 
 class PUMLGenerator:
@@ -36,12 +36,12 @@ class PUMLGenerator:
             adapters_factory = _registry.get_all_adapters
         self._adapters_factory = adapters_factory
 
-    def _discover_and_parse(self) -> list[tuple[models.ModuleInfo, object]]:
+    def _discover_and_parse(self) -> list[tuple[models.ModuleInfo, Adapter]]:
         """Discover source files and parse them with registered adapters.
 
         Returns a list of (ModuleInfo, adapter) tuples.
         """
-        all_modules: list[tuple[models.ModuleInfo, object]] = []
+        all_modules: list[tuple[models.ModuleInfo, Adapter]] = []
         seen = set()
         for adapter in self._adapters_factory():
             for ext in adapter.supported_extensions():
@@ -65,8 +65,8 @@ class PUMLGenerator:
         return all_modules
 
     def _filter_content_modules(
-        self, all_modules: list[tuple[models.ModuleInfo, object]]
-    ) -> list[tuple[models.ModuleInfo, object]]:
+        self, all_modules: list[tuple[models.ModuleInfo, Adapter]]
+    ) -> list[tuple[models.ModuleInfo, Adapter]]:
         return [(m, a) for (m, a) in all_modules if m.classes or m.top_level_functions]
 
     def _writer(self):

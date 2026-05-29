@@ -83,6 +83,7 @@ def register_default_adapters(env: dict | None = None) -> None:
     elif JavaJavalangAdapter:
         _INSTANCE.register("java", JavaJavalangAdapter())
     else:
+        assert JavaAdapter is not None
         _INSTANCE.register("java", JavaAdapter())
 
 
@@ -114,6 +115,7 @@ def create_adapter(language: str, **kwargs):
             return JavaJDTAdapter(jdtls_client_factory=jdtls_factory)
         if JavaJavalangAdapter:
             return JavaJavalangAdapter()
+        assert JavaAdapter is not None
         return JavaAdapter()
     # Defer to existing registry for other languages
     return _INSTANCE.get(language)

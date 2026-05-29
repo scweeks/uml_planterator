@@ -26,7 +26,7 @@ class CppAdapter(Adapter):
     def supported_extensions(self) -> list[str]:
         return [".cpp", ".hpp", ".cc", ".h"]
 
-    def parse_source(self, path: Path, source: str) -> models.ModuleInfo | None:
+    def parse_source(self, path: Path, source: str) -> models.ModuleInfo:
         module_name = path.stem
         rel = str(path.relative_to(path.parent))
         classes = []

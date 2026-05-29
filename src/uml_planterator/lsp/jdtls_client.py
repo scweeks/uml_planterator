@@ -15,6 +15,7 @@ import os
 import subprocess
 import threading
 import time
+from collections.abc import Callable
 from pathlib import Path
 from queue import Empty, Queue
 from typing import Any
@@ -38,7 +39,7 @@ class JDTLSClient:
         workspace: Path,
         timeout: float = 10.0,
         proc: subprocess.Popen | None = None,
-        proc_factory: callable | None = None,
+        proc_factory: Callable[..., Any] | None = None,
     ) -> None:
         # Basic input validation to avoid shell-injection style misuse:
         if not isinstance(cmd, list) or not all(isinstance(x, str) for x in cmd):
@@ -99,7 +100,7 @@ class JDTLSClient:
         try:
             fd = stream.fileno()
             try:
-                os.set_blocking(fd, False)
+                os.set_blocking(fd, False)  # type: ignore[attr-defined]
             except (AttributeError, OSError):
                 # If not supported, fall back to blocking reads but keep checks
                 fd = None

@@ -50,7 +50,7 @@ class JavaJavalangAdapter(Adapter):
 
     def parse_source(self, path: Path, source: str) -> models.ModuleInfo:
         try:
-            import javalang  # type: ignore
+            import javalang
         except ImportError:
             # Defer to the simple regex adapter if javalang isn't present.
             from uml_planterator.adapters.java_adapter import JavaAdapter
